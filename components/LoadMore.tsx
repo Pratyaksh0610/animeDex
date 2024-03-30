@@ -1,9 +1,10 @@
 "use client";
-import { fetchAnime } from "@/app/action";
+
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import AnimeCard, { AnimeProp } from "./AnimeCard";
+import { useEffect, useState } from "react";
+
+import { fetchAnime } from "../app/action";
 
 let page = 2;
 
@@ -11,18 +12,27 @@ export type AnimeCard = JSX.Element;
 
 function LoadMore() {
   const { ref, inView } = useInView();
+
   const [data, setData] = useState<AnimeCard[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (inView) {
-      // alert("Load more");
-      fetchAnime(page).then((res) => {
-        console.log(res);
-        setData([...data, ...res]);
-        page++;
-      });
+      setIsLoading(true);
+      const delay = 500;
+
+      const timeoutId = setTimeout(() => {
+        fetchAnime(page).then((res) => {
+          setData([...data, ...res]);
+          page++;
+        });
+
+        setIsLoading(false);
+      }, delay);
+
+      return () => clearTimeout(timeoutId);
     }
-  }, [inView, data]);
+  }, [inView, data, isLoading]);
 
   return (
     <>
@@ -31,13 +41,15 @@ function LoadMore() {
       </section>
       <section className="flex justify-center items-center w-full">
         <div ref={ref}>
-          <Image
-            src="./spinner.svg"
-            alt="spinner"
-            width={56}
-            height={56}
-            className="object-contain"
-          />
+          {inView && isLoading && (
+            <Image
+              src="./spinner.svg"
+              alt="spinner"
+              width={56}
+              height={56}
+              className="object-contain"
+            />
+          )}
         </div>
       </section>
     </>

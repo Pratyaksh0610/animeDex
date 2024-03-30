@@ -1,5 +1,13 @@
 import Image from "next/image";
-import { MotionDiv } from "./MotionDiv";
+
+import { MotionDiv } from "./Motion";
+
+const stagger = 0.25;
+
+const variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+};
 
 export interface AnimeProp {
   id: string;
@@ -18,11 +26,6 @@ interface Prop {
   index: number;
 }
 
-const variants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1 },
-};
-
 function AnimeCard({ anime, index }: Prop) {
   return (
     <MotionDiv
@@ -30,7 +33,7 @@ function AnimeCard({ anime, index }: Prop) {
       initial="hidden"
       animate="visible"
       transition={{
-        delay: index * 0.25,
+        delay: index * stagger,
         ease: "easeInOut",
         duration: 0.5,
       }}
